@@ -1,4 +1,5 @@
 import cv2
+from cv2 import threshold
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -12,7 +13,7 @@ rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # BGR till RGB, converts an image f
 cv2.imshow('RGB', rgb) # visar rgb-bild
 
 # färg till svartvit
-image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+grayimg = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 # BGR to HSV (hue, saturation , color)
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -34,4 +35,13 @@ cv2.imshow('Mask', mask)
 
 masked = cv2.bitwise_and(image, image, mask=mask)
 cv2.imshow('Masked Image', masked)
+
+# thresholding / binarizing images
+# konvertera till gråskala först
+threshold, thresh = cv2.threshold(grayimg, 150, 255, cv2.THRESH_BINARY) # cv2.THRESH_BINARY_INV för att invertera
+cv2.imshow('Simple Thresholded', thresh) # thresh_inv för att invertera
+
+# adaptive thresholding
+adaptive_thresh = cv2.adaptiveThreshold(grayimg, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 3) # kan leka runt med värdena, och inveretera
+cv2.imshow('Adaptive Thresholding', adaptive_thresh)
 
