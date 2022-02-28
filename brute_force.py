@@ -1,6 +1,8 @@
-import multiprocessing
+import multiprocessing, time
 import concurrent.futures
 import numpy as np
+import factorize_numbers
+import threading
 
 keyNumber = np.uint32(150000)
 
@@ -20,3 +22,4 @@ with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_count, initializer=i
         print(result)
 
 while KEY_NOT_FOUND.value and (cur_key <= end_key):
+    ...
