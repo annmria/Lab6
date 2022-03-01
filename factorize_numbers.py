@@ -3,12 +3,15 @@ import multiprocessing
 import concurrent.futures
 import time
 import numpy as np
+import psutil # installeras
 
 LIMIT = 10001 # values up to 10001 is OK to wait for, 10s on my PC
 
 # showing how to use an uint
 np_val = np.uint32(LIMIT) 
 MAX_FACT_VALUE = multiprocessing.Value('i', 0)
+
+cpu_count = psutil.cpu_count(logical=False) # physical cores
 
 # https://stackoverflow.com/questions/56010428/how-to-share-state-when-using-concurrent-futures
 def init_globals(fact_max):
