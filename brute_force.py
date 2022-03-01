@@ -3,6 +3,7 @@ import concurrent.futures
 import numpy as np
 import factorize_numbers
 import threading
+import psutil # måste installeras
 
 keyNumber = np.uint32(150000)
 
