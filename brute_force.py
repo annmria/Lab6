@@ -1,4 +1,5 @@
-import multiprocessing, time
+import multiprocessing
+import time
 import concurrent.futures
 import numpy as np
 from psutil import cpu_count
@@ -10,7 +11,7 @@ import datetime
 # keyNumber = np.uint32(150000) (secret_key)
 UI32 = np.iinfo(np.uint32)
 secret_key = np.uint32(9119123)
-cpu_count = 4
+cpu_count = 4 # ------- ANVÄNDER BARA 1 CPU ??? --------------
 
 cpus = []
 cpu = []
@@ -30,7 +31,7 @@ def init_globals(key_not_found):
  
  # multiprocess function, notice small v in .value
 def crack_something(cpu, cur_key, end_key):
-    print('CPU: {cpu} keyspace start at {cur_key} and end at {end_key}')
+    print(f'CPU: {cpu} keyspace start at {cur_key} and end at {end_key}')
     
     while KEY_NOT_FOUND.value and (cur_key <= end_key):
         if(cur_key == secret_key):
@@ -53,8 +54,8 @@ def main():
     # set last key coorect
     end_keys[-1] = np.uint32(UI32.max)
     
-    print('Start keyspace offsets: {start_keys}')
-    print('End keyspace offsets: {end_keys}')
+    print(f'Start keyspace offsets: {start_keys}')
+    print(f'End keyspace offsets: {end_keys}')
     
     with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_count, initializer=init_globals, initargs=(key_not_found,)) as executor:
         for result in executor.map(crack_something, cpus, start_keys, end_keys):
