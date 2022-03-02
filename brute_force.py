@@ -3,15 +3,14 @@ import time
 import concurrent.futures
 import numpy as np
 from psutil import cpu_count
-import factorize_numbers
-import threading
-import psutil
+# import factorize_numbers
+# import threading
+# import psutil
 import datetime
 
-# keyNumber = np.uint32(150000) (secret_key)
 UI32 = np.iinfo(np.uint32)
-secret_key = np.uint32(9119123)
-cpu_count = 4 # ------- ANVÄNDER BARA 1 CPU ??? --------------
+secret_key = np.uint32(150000)
+cpu_count = 4
 
 cpus = []
 cpu = []
@@ -42,12 +41,14 @@ def crack_something(cpu, cur_key, end_key):
         
         if(cur_key % 1_000_000 == 0):
             print(f'\nCPU {cpu} is at key: {cur_key}')
+            
+# när rätt nyckel hittats, visas "None" för att resterande cores inte längre räknar
 
         
 def main():
     """ setup and receive result """
     for i in range(0, cpu_count):
-        cpus.append(1)
+        cpus.append(i)
         start_keys.append(i * cpu_key_space)
         end_keys.append((i+1) * cpu_key_space)
     
