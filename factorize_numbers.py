@@ -12,6 +12,7 @@ np_val = np.uint32(LIMIT)
 MAX_FACT_VALUE = multiprocessing.Value('i', 0)
 
 cpu_count = psutil.cpu_count(logical=False) # physical cores
+cpu_count = 4
 
 # https://stackoverflow.com/questions/56010428/how-to-share-state-when-using-concurrent-futures
 def init_globals(fact_max):
