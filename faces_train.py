@@ -5,7 +5,7 @@ import numpy as np
 # create list of images of people (eg, ben affleck, dwayne johnson,)
 people = [' ', ' ', ' ']
 # pathway to folder, genom DIR = r'pathway'
-# haar_cascade = cv.CascadeClassifier('haar_face.xml)
+haar_cascade = cv.CascadeClassifier('haar_face.xml')
 
 features = []
 labels = []
