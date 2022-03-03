@@ -1,86 +1,66 @@
-""" Download image according to given urls and automatically rename them in order. """
-# -*- coding: utf-8 -*-
-# author: Yabin Zheng
-# Email: sczhengyabin@hotmail.com
-
-from __future__ import print_function
-
-import shutil
-import imghdr
+'''
+image_downloader.py
+ChromeDriver (exact major version is needed): https://chromedriver.chromium.org/downloads
+pip install selenium
+'''
 import os
-import concurrent.futures
-import requests
+import urllib.request
+import time
+from selenium import webdriver  # needs to be whitelisted
 
-headers = {
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-    "Proxy-Connection": "keep-alive",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                  "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36",
-    "Accept-Encoding": "gzip, deflate, sdch",
-    # 'Connection': 'close',
-}
-
-
-def download_image(image_url, dst_dir, file_name, timeout=20, proxy_type=None, proxy=None):
-    proxies = None
-    if proxy_type is not None:
-        proxies = {
-            "http": proxy_type + "://" + proxy,
-            "https": proxy_type + "://" + proxy
-        }
-
-    response = None
-    file_path = os.path.join(dst_dir, file_name)
-    try_times = 0
-    while True:
-        try:
-            try_times += 1
-            response = requests.get(
-                image_url, headers=headers, timeout=timeout, proxies=proxies)
-            with open(file_path, 'wb') as f:
-                f.write(response.content)
-            response.close()
-            file_type = imghdr.what(file_path)
-            # if file_type is not None:
-            if file_type in ["jpg", "jpeg", "png", "bmp"]:
-                new_file_name = "{}.{}".format(file_name, file_type)
-                new_file_path = os.path.join(dst_dir, new_file_name)
-                shutil.move(file_path, new_file_path)
-                print("## OK:  {}  {}".format(new_file_name, image_url))
-            else:
-                os.remove(file_path)
-                print("## Err:  {}".format(image_url))
-            break
-        except Exception as e:
-            if try_times < 3:
-                continue
-            if response:
-                response.close()
-            print("## Fail:  {}  {}".format(image_url, e.args))
-            break
+# r (raw string) => https://stackoverflow.com/questions/52360537/i-know-of-f-strings-but-what-are-r-strings-are-there-others
+CROME_DRIVER_PATH = r'C:\temp\chromedriver.exe'
+BASE_SAVE_FOLDER = 'images/'
+URL_PREFIX = 'https://www.google.com.sg/search?q='
+# https://simply-python.com/tag/google-images/
+URL_POSTFIX = '&source=lnms&tbm=isch&sa=X&ei=0eZEVbj3IJG5uATalICQAQ&ved=0CAcQ_AUoAQ&biw=939&bih=591'
 
 
-def download_images(image_urls, dst_dir, file_prefix="img", concurrency=50, timeout=20, proxy_type=None, proxy=None):
-    """
-    Download image according to given urls and automatically rename them in order.
-    :param timeout:
-    :param proxy:
-    :param proxy_type:
-    :param image_urls: list of image urls
-    :param dst_dir: output the downloaded images to dst_dir
-    :param file_prefix: if set to "img", files will be in format "img_xxx.jpg"
-    :param concurrency: number of requests process simultaneously
-    :return: none
-    """
+def main():
+    if not os.path.exists(BASE_SAVE_FOLDER):
+        os.mkdir(BASE_SAVE_FOLDER)
+    download_images()
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
-        future_list = list()
-        count = 0
-        if not os.path.exists(dst_dir):
-            os.makedirs(dst_dir)
-        for image_url in image_urls:
-            file_name = file_prefix + "_" + "%04d" % count
-            future_list.append(executor.submit(
-                download_image, image_url, dst_dir, file_name, timeout, proxy_type, proxy))
-            count += 1
-        concurrent.futures.wait(future_list, timeout=180)
+
+def download_images():
+    topic = input('What do you want to search for? ')
+    n_images = int(input('How many images do you want? '))
+
+    save = input('In what subdir do you want to save the images? ')
+    saving = BASE_SAVE_FOLDER + save
+    if not os.path.exists(saving):
+        os.mkdir(saving)
+
+    search_url = URL_PREFIX + topic + URL_POSTFIX
+    #print(search_url)
+
+    driver = webdriver.Chrome(CROME_DRIVER_PATH)
+    driver.get(search_url)
+
+    value = 0
+    for i in range(3):
+        driver.execute_script('scrollBy('+str(value)+',+1000);')
+        value += 1000
+        time.sleep(1)
+
+    elem1 = driver.find_element_by_id('islmp')
+    sub = elem1.find_elements_by_tag_name('img')
+
+    j=0
+    for j, i in enumerate(sub):
+        if j < n_images:
+            src = i.get_attribute('src')
+            try:
+                if src is not None:
+                    src = str(src)
+                    print(src)
+                    urllib.request.urlretrieve(src, os.path.join(saving, topic + str(j) + '.jpg'))
+                else:
+                    raise TypeError
+            except Exception as ex:       # catches type error along with other errors
+                print(f'fail with error {ex}')
+
+    driver.close()
+
+if __name__ == "__main__":
+    main()
