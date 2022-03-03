@@ -3,45 +3,57 @@ from cv2 import threshold
 import matplotlib.pyplot as plt
 import numpy as np
 
+face_recognizer = cv2.face.LBPHFaceRecognizer_create()
+face_recognizer.read('training_data.yml')
+cascadePath = 'haar_face.xml'
+faceCascade = cv2.CascadeClassifier(cascadePath)
+
+#iniciate id counter
+id = 0
+
+people = ['Depp', 'Jackson', 'Johnson', 'Lee', 'Willis']
 #reading the image:
-image = cv2.imread('index.png') # placeholder
+img = cv2.imread('images/Depp/johnny depp4.jpg') # placeholder
+
+while True:
+    # färg till svartvit
+    grayimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    faces = faceCascade.detectMultiScale(grayimg,
+        scaleFactor = 1.2,
+        minNeighbors = 5,
+       )
+
+    for(x,y,w,h) in faces:
+
+        cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
+
+        id, confidence = face_recognizer.predict(grayimg[y:y+h,x:x+w])
+
+        # Check if confidence is less them 100 ==> "0" is perfect match 
+        if (confidence < 100):
+            id = people[id]
+            confidence = "  {0}%".format(round(100 - confidence))
+        else:
+            id = "unknown"
+            confidence = "  {0}%".format(round(100 - confidence))
+        
+    cv2.imshow('images', img)
+    
+    break
+
+
 
 # converting image to rgb
 # cv använder bgr (blue green red), alltså bakvänt rgb (red green blue)
 # cv2.cvtColor(src, code[, dst[, dstCn]]) -> dst
-rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # BGR till RGB, converts an image from one color space to another
-cv2.imshow('RGB', rgb) # visar rgb-bild
-
-# färg till svartvit
-grayimg = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-# BGR to HSV (hue, saturation , color)
-hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-cv2.imshow('HSV', hsv)
+# rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # BGR till RGB, converts an image from one color space to another
+# cv2.imshow('RGB', rgb) # visar rgb-bild
 
 #plotting the image
 plt.imshow(image)
 plt.show()
 
 #saving image
-cv2.imwrite('index.jpg', image)
-
-# masking (fokusera på vissa delar i bilden)
-blank = np.zeros(image.shape[:2], dtype='uint8') # dimensions have to be the same size as the image
-cv2.imshow('Blank Image', blank)
-
-mask = cv2.circle(blank, (image.shape[1]//2, image.shape[0]//2, 100, 255, -1))
-cv2.imshow('Mask', mask)
-
-masked = cv2.bitwise_and(image, image, mask=mask)
-cv2.imshow('Masked Image', masked)
-
-# thresholding / binarizing images
-# konvertera till gråskala först
-threshold, thresh = cv2.threshold(grayimg, 150, 255, cv2.THRESH_BINARY) # cv2.THRESH_BINARY_INV för att invertera
-cv2.imshow('Simple Thresholded', thresh) # thresh_inv för att invertera
-
-# adaptive thresholding
-adaptive_thresh = cv2.adaptiveThreshold(grayimg, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 3) # kan leka runt med värdena, och inveretera
-cv2.imshow('Adaptive Thresholding', adaptive_thresh)
+cv2.imwrite('johnny depp4.jpg', image)
 

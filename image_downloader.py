@@ -9,7 +9,7 @@ import time
 from selenium import webdriver  # needs to be whitelisted
 
 # r (raw string) => https://stackoverflow.com/questions/52360537/i-know-of-f-strings-but-what-are-r-strings-are-there-others
-CROME_DRIVER_PATH = r'C:\temp\chromedriver.exe'
+CROME_DRIVER_PATH = r'C:\Temp\chromedriver.exe'
 BASE_SAVE_FOLDER = 'images/'
 URL_PREFIX = 'https://www.google.com.sg/search?q='
 # https://simply-python.com/tag/google-images/
