@@ -9,7 +9,7 @@ from psutil import cpu_count
 import datetime
 
 UI32 = np.iinfo(np.uint32)
-secret_key = np.uint32(150000)
+secret_key = np.uint32(1000000)
 cpu_count = 4
 
 cpus = []
@@ -68,5 +68,5 @@ if __name__ == '__main__':
     finish = time.perf_counter()
     print(f'\nFinished in {round(finish-start, 2)} seconds')
     keys_sec = int(secret_key / round(finish-start, 2) * cpu_count)
-    print(f'\nAround {keys_sec} keys per second was tested')
+    print("\n Around", keys_sec ,"keys per second was tested")
     TOTAL_TIME = str(datetime.timedelta(seconds=int(np.uint32(UI32.max)/keys_sec)))
