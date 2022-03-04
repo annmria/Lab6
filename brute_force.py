@@ -3,9 +3,6 @@ import time
 import concurrent.futures
 import numpy as np
 from psutil import cpu_count
-# import factorize_numbers
-# import threading
-# import psutil
 import datetime
 
 UI32 = np.iinfo(np.uint32)
@@ -30,17 +27,17 @@ def init_globals(key_not_found):
  
  # multiprocess function, notice small v in .value
 def crack_something(cpu, cur_key, end_key):
-    print(f'CPU: {cpu} keyspace start at {cur_key} and end at {end_key}')
+    print("CPU: ",cpu,"keyspace start at", cur_key, "and end at" ,end_key)
     
     while KEY_NOT_FOUND.value and (cur_key <= end_key):
         if(cur_key == secret_key):
             KEY_NOT_FOUND.value = False
-            print (f'\nCPU: {cpu} found secret key: {cur_key}')
+            print ("\nCPU: ",cpu, "found secret key: ",cur_key)
         else:
             cur_key = cur_key + 1
         
         if(cur_key % 1_000_000 == 0):
-            print(f'\nCPU {cpu} is at key: {cur_key}')
+            print("\nCPU", cpu ,"is at key: ", cur_key)
             
 # när rätt nyckel hittats, visas "None" för att resterande cores inte längre räknar
 
@@ -55,8 +52,8 @@ def main():
     # set last key coorect
     end_keys[-1] = np.uint32(UI32.max)
     
-    print(f'Start keyspace offsets: {start_keys}')
-    print(f'End keyspace offsets: {end_keys}')
+    print("Start keyspace offsets: ", start_keys)
+    print("End keyspace offsets: ", end_keys)
     
     with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_count, initializer=init_globals, initargs=(key_not_found,)) as executor:
         for result in executor.map(crack_something, cpus, start_keys, end_keys):
@@ -66,7 +63,7 @@ if __name__ == '__main__':
     start = time.perf_counter()
     main()
     finish = time.perf_counter()
-    print(f'\nFinished in {round(finish-start, 2)} seconds')
+    print("\nFinished in", round(finish-start, 2), "seconds") #2 decimaler
     keys_sec = int(secret_key / round(finish-start, 2) * cpu_count)
     print("\n Around", keys_sec ,"keys per second was tested")
     TOTAL_TIME = str(datetime.timedelta(seconds=int(np.uint32(UI32.max)/keys_sec)))

@@ -1,12 +1,4 @@
-''''
-Real Time Face Recogition
-	==> Each face stored on dataset/ dir, should have a unique numeric integer ID as 1, 2, 3, etc                       
-	==> LBPH computed model (trained faces) should be on trainer/ dir
-Based on original code by Anirban Kar: https://github.com/thecodacus/Face-Recognition    
 
-Developed by Marcelo Rovai - MJRoBot.org @ 21Feb18  
-
-'''
 #den här filen körs sist för att se hur nära du matchar med bilderna
 import cv2
 import numpy as np
@@ -23,7 +15,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 id = 0
 
 # names related to ids: example ==> Marcelo: id=1,  etc
-names = ['None', 'Markus', 'Paula', 'Ilza', 'Z', 'W'] 
+names = ['None', 'Markus', 'Placeholder',] 
 
 # Initialize and start realtime video capture
 cam = cv2.VideoCapture(0)
@@ -39,7 +31,7 @@ while True:
     ret, img =cam.read()
     
 
-    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY) #grayscale
 
     faces = faceCascade.detectMultiScale( 
         gray,
